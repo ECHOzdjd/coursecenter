@@ -1,0 +1,574 @@
+{
+	"info": {
+		"_postman_id": "course-center-api-collection",
+		"name": "课程中心 API Collection",
+		"description": "完整的课程中心后端API测试集合 - 包含24个接口\n\n## 模块说明\n- 认证模块: 5个接口（注册、登录、获取用户信息、更新信息、修改密码）\n- 课程模块: 13个接口（列表、详情、筛选、搜索、推荐、热门、最新、章节、报名、收藏、进度等）\n- 分类模块: 2个接口（分类列表、分类详情）\n- 讲师模块: 1个接口（明星讲师）\n- 评价模块: 4个接口（评价列表、添加、更新、删除）\n\n## 使用说明\n1. 先执行「用户登录」接口获取Token\n2. Token会自动保存到环境变量中\n3. 需要认证的接口会自动使用保存的Token\n4. 可根据需要修改base_url变量",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "认证模块",
+			"item": [
+				{
+					"name": "用户注册",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_name\": \"测试用户\",\n  \"phone\": \"13900000000\",\n  \"email\": \"test@example.com\",\n  \"password\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "register"]
+						}
+					}
+				},
+				{
+					"name": "用户登录",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.success && response.data.token) {",
+									"        pm.environment.set('token', response.data.token);",
+									"        console.log('Token已保存:', response.data.token);",
+									"    }",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone\": \"13900139001\",\n  \"password\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "获取当前用户信息",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/me",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "me"]
+						}
+					}
+				},
+				{
+					"name": "更新用户信息",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_name\": \"张三\",\n  \"email\": \"zhangsan@example.com\",\n  \"occupation\": \"软件工程师\",\n  \"learning_goal\": \"提升技术能力\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "profile"]
+						}
+					}
+				},
+				{
+					"name": "修改密码",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"oldPassword\": \"123456\",\n  \"newPassword\": \"654321\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/password",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "password"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "课程模块",
+			"item": [
+				{
+					"name": "获取课程列表",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/courses?page=1&limit=12",
+							"host": ["{{base_url}}"],
+							"path": ["api", "courses"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "12"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "获取推荐课程",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/courses/recommended?limit=6",
+							"host": ["{{base_url}}"],
+							"path": ["api", "courses", "recommended"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "6"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "获取热门课程",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/courses/popular?limit=6",
+							"host": ["{{base_url}}"],
+							"path": ["api", "courses", "popular"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "6"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "获取最新课程",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/courses/newest?limit=6",
+							"host": ["{{base_url}}"],
+							"path": ["api", "courses", "newest"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "6"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "按分类筛选课程",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/courses?category_id=1&page=1&limit=12",
+							"host": ["{{base_url}}"],
+							"path": ["api", "courses"],
+							"query": [
+								{
+									"key": "category_id",
+									"value": "1"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "12"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "按难度筛选课程",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/courses?difficulty=beginner&page=1&limit=12",
+							"host": ["{{base_url}}"],
+							"path": ["api", "courses"],
+							"query": [
+								{
+									"key": "difficulty",
+									"value": "beginner"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "12"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "搜索课程",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/courses?keyword=Python&page=1&limit=12",
+							"host": ["{{base_url}}"],
+							"path": ["api", "courses"],
+							"query": [
+								{
+									"key": "keyword",
+									"value": "Python"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "12"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "获取课程详情",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/courses/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "courses", "1"]
+						}
+					}
+				},
+				{
+					"name": "获取相关课程",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/courses/1/related?limit=4",
+							"host": ["{{base_url}}"],
+							"path": ["api", "courses", "1", "related"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "4"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "报名课程",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/courses/1/enroll",
+							"host": ["{{base_url}}"],
+							"path": ["api", "courses", "1", "enroll"]
+						}
+					}
+				},
+				{
+					"name": "收藏/取消收藏课程",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/courses/1/favorite",
+							"host": ["{{base_url}}"],
+							"path": ["api", "courses", "1", "favorite"]
+						}
+					}
+				},
+				{
+					"name": "更新学习进度",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"progress\": 50\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/courses/1/progress",
+							"host": ["{{base_url}}"],
+							"path": ["api", "courses", "1", "progress"]
+						}
+					}
+				},
+				{
+					"name": "获取我的课程",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/courses/my/enrolled",
+							"host": ["{{base_url}}"],
+							"path": ["api", "courses", "my", "enrolled"]
+						}
+					}
+				},
+				{
+					"name": "获取课程章节列表",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/courses/1/chapters",
+							"host": ["{{base_url}}"],
+							"path": ["api", "courses", "1", "chapters"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "分类模块",
+			"item": [
+				{
+					"name": "获取所有分类",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/categories",
+							"host": ["{{base_url}}"],
+							"path": ["api", "categories"]
+						}
+					}
+				},
+				{
+					"name": "获取分类详情",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/categories/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "categories", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "讲师模块",
+			"item": [
+				{
+					"name": "获取明星讲师",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/teachers/top?limit=6",
+							"host": ["{{base_url}}"],
+							"path": ["api", "teachers", "top"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "6",
+									"description": "返回数量限制，默认6个"
+								}
+							]
+						},
+						"description": "获取平均评分>=4.0的明星讲师列表，按评分和学生数排序"
+					}
+				}
+			]
+		},
+		{
+			"name": "评价模块",
+			"item": [
+				{
+					"name": "获取课程评价列表",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/reviews/course/1?page=1&limit=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reviews", "course", "1"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "添加课程评价",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rating\": 5,\n  \"comment\": \"课程非常好，讲解清晰易懂！\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/reviews/course/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reviews", "course", "1"]
+						}
+					}
+				},
+				{
+					"name": "更新评价",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rating\": 4,\n  \"comment\": \"修改后的评价内容\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/reviews/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reviews", "1"]
+						}
+					}
+				},
+				{
+					"name": "删除评价",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/reviews/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reviews", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "健康检查",
+			"request": {
+				"method": "GET",
+				"url": {
+					"raw": "{{base_url}}/api/health",
+					"host": ["{{base_url}}"],
+					"path": ["api", "health"]
+				}
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
